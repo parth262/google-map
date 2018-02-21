@@ -28,7 +28,7 @@ class GetDirections extends AsyncTask<Object, String[], String> {
 
     GetDirections(LatLng origin, LatLng destination) {
 
-        final_url = BASE_URL + "origin=" + origin.latitude + "," + origin.longitude + "&destination=" + destination.latitude + "," + destination.longitude + "&key=AIzaSyBphoy0vCpUtrBIH4JkwPJyLIMJln6Ulvg";
+        final_url = BASE_URL + "origin=" + origin.latitude + "," + origin.longitude + "&destination=" + destination.latitude + "," + destination.longitude + "&alternatives=true&region=in&key=AIzaSyBphoy0vCpUtrBIH4JkwPJyLIMJln6Ulvg";
         System.out.println(origin.latitude + "," + origin.longitude);
         System.out.println(destination.latitude + "," + destination.longitude);
         System.out.println(final_url);
@@ -37,6 +37,7 @@ class GetDirections extends AsyncTask<Object, String[], String> {
     public JSONArray getSteps() throws MalformedURLException {
 
         JSONArray steps = new JSONArray();
+        JSONArray routes = new JSONArray();
         URL url = new URL(final_url);
         InputStream in;
         BufferedReader bufferedReader;
@@ -53,8 +54,11 @@ class GetDirections extends AsyncTask<Object, String[], String> {
             }
 
             JSONObject jsonObject = new JSONObject(stringBuffer.toString());
-
-            steps = jsonObject.getJSONArray("routes").getJSONObject(0).getJSONArray("legs").getJSONObject(0).getJSONArray("steps");
+            routes = jsonObject.getJSONArray("routes");
+            for(int i=0;i<routes.length();i++) {
+                steps = routes.getJSONObject(i).getJSONArray("legs").getJSONObject(0).getJSONArray("steps");
+            }
+            //steps = jsonObject.getJSONArray("routes").getJSONObject(0).getJSONArray("legs").getJSONObject(0).getJSONArray("steps");
             System.out.println(steps);
         } catch (IOException | JSONException e) {
             e.printStackTrace();
@@ -115,8 +119,26 @@ class GetDirections extends AsyncTask<Object, String[], String> {
         String[] strings;
 
         DataParser dataParser = new DataParser();
-        strings = dataParser.parseDirections(string);
-        displayDirections(strings);
+        /*strings = dataParser.parseDirections(string);
+        displayDirections(strings);*/
+
+        JSONArray jsonArray = null;
+        JSONObject jsonObject;
+        JSONArray routes;
+        int[] colors = {Color.BLUE,Color.CYAN,Color.GRAY};
+
+        try {
+            jsonObject = new JSONObject(string);
+            routes = jsonObject.getJSONArray("routes");
+            for(int i=0;i<routes.length();i++) {
+                jsonArray = routes.getJSONObject(i).getJSONArray("legs").getJSONObject(0).getJSONArray("steps");
+                strings = dataParser.getPaths(jsonArray);
+                displayDirections(strings,colors[i]);
+            }
+            //jsonArray = jsonObject.getJSONArray("routes").getJSONObject(0).getJSONArray("legs").getJSONObject(0).getJSONArray("steps");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
         /*JSONArray steps = (JSONArray) objects[1];
         GoogleMap mMap = (GoogleMap) objects[0];
         LatLngBounds latLngBounds = (LatLngBounds) objects[2];
@@ -139,14 +161,14 @@ class GetDirections extends AsyncTask<Object, String[], String> {
         }*/
     }
 
-    public void displayDirections(String[] directionsList)
+    public void displayDirections(String[] directionsList, int color)
     {
 
         int count = directionsList.length;
         for(int i = 0;i<count;i++)
         {
             PolylineOptions options = new PolylineOptions();
-            options.color(Color.BLUE);
+            options.color(color);
             options.width(10);
             options.addAll(PolyUtil.decode(directionsList[i]));
 

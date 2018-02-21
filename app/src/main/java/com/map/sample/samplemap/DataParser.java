@@ -10,10 +10,15 @@ public class DataParser {
     {
         JSONArray jsonArray = null;
         JSONObject jsonObject;
+        JSONArray routes;
 
         try {
             jsonObject = new JSONObject(jsonData);
-            jsonArray = jsonObject.getJSONArray("routes").getJSONObject(0).getJSONArray("legs").getJSONObject(0).getJSONArray("steps");
+            routes = jsonObject.getJSONArray("routes");
+            for(int i=0;i<routes.length();i++) {
+                jsonArray = routes.getJSONObject(i).getJSONArray("legs").getJSONObject(0).getJSONArray("steps");
+            }
+            //jsonArray = jsonObject.getJSONArray("routes").getJSONObject(0).getJSONArray("legs").getJSONObject(0).getJSONArray("steps");
         } catch (JSONException e) {
             e.printStackTrace();
         }
