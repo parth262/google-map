@@ -4,9 +4,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class DataParser {
+class DataParser {
 
-    public String[] parseDirections(String jsonData)
+    /*public String[] parseDirections(String jsonData)
     {
         JSONArray jsonArray = null;
         JSONObject jsonObject;
@@ -18,14 +18,13 @@ public class DataParser {
             for(int i=0;i<routes.length();i++) {
                 jsonArray = routes.getJSONObject(i).getJSONArray("legs").getJSONObject(0).getJSONArray("steps");
             }
-            //jsonArray = jsonObject.getJSONArray("routes").getJSONObject(0).getJSONArray("legs").getJSONObject(0).getJSONArray("steps");
         } catch (JSONException e) {
             e.printStackTrace();
         }
         return getPaths(jsonArray);
-    }
+    }*/
 
-    public String[] getPaths(JSONArray googleStepsJson )
+    String[] getPaths(JSONArray googleStepsJson)
     {
         int count = googleStepsJson.length();
         String[] polylines = new String[count];
@@ -42,7 +41,7 @@ public class DataParser {
         return polylines;
     }
 
-    public String getPath(JSONObject googlePathJson)
+    private String getPath(JSONObject googlePathJson)
     {
         String polyline = "";
         try {
