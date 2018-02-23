@@ -4,6 +4,10 @@ import android.graphics.Color;
 import android.os.AsyncTask;
 
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.Cap;
+import com.google.android.gms.maps.model.CustomCap;
+import com.google.android.gms.maps.model.JointType;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.maps.android.PolyUtil;
@@ -71,7 +75,7 @@ class GetDirections extends AsyncTask<Object, String[], String> {
         try {
             jsonObject = new JSONObject(string);
             routes = jsonObject.getJSONArray("routes");
-            for(int i=0;i<routes.length();i++) {
+            for(int i=0;i<1;i++) {
                 jsonArray = routes.getJSONObject(i).getJSONArray("legs").getJSONObject(0).getJSONArray("steps");
                 strings = dataParser.getPaths(jsonArray);
                 displayDirections(strings,colors[i]);
@@ -83,13 +87,14 @@ class GetDirections extends AsyncTask<Object, String[], String> {
 
     private void displayDirections(String[] directionsList, int color)
     {
+        PolylineOptions options = new PolylineOptions();
         for (String aDirectionsList : directionsList) {
-            PolylineOptions options = new PolylineOptions();
             options.color(color);
-            options.width(10);
+            options.width(8);
+            options.jointType(JointType.ROUND);
             options.addAll(PolyUtil.decode(aDirectionsList));
-
-            mMap.addPolyline(options);
         }
+
+        mMap.addPolyline(options).setEndCap(new CustomCap(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW)));
     }
 }
